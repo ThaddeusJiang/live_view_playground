@@ -75,6 +75,10 @@ defmodule TimelineLive do
     </div>
 
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       .timeline {
         max-width: 800px;
         margin: 0 auto;
@@ -117,11 +121,16 @@ defmodule TimelineLive do
         font-size: 1.1em;
         line-height: 1.5;
         margin: 0 0 8px 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
 
       .post-content small {
         color: #8795a1;
         font-size: 0.9em;
+        display: block;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
 
       form {
@@ -130,11 +139,12 @@ defmodule TimelineLive do
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        width: 100%;
       }
 
       textarea {
         width: 100%;
-        min-height: 100px;
+        min-height: 3ch;
         margin-bottom: 16px;
         padding: 12px;
         border: 2px solid #e1e8ed;
