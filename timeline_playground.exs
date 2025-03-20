@@ -21,6 +21,10 @@ defmodule TimelineLive do
     {:ok, socket}
   end
 
+  def handle_event("validate", %{"content" => content}, socket) do
+    {:noreply, assign(socket, :form, to_form(%{"content" => content}))}
+  end
+
   def handle_event("create_post", %{"content" => content}, socket) do
     post = %{
       id: System.unique_integer([:positive]),
@@ -54,7 +58,7 @@ defmodule TimelineLive do
     <div class="timeline">
       <h1>Timeline</h1>
 
-      <.form for={@form} phx-submit="create_post" id="post-form">
+      <.form for={@form} phx-submit="create_post" phx-change="validate" id="post-form">
         <textarea name="content" placeholder="What's on your mind?"><%= @form.params["content"] %></textarea>
         <button type="submit">Post</button>
       </.form>
