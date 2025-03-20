@@ -1,11 +1,7 @@
-# timeline_playground.exs
-
-# 安装依赖
 Mix.install([
   {:phoenix_playground, "~> 0.1.6"}
 ])
 
-# 定义 LiveView 模块
 defmodule TimelineLive do
   use Phoenix.LiveView
 
@@ -32,30 +28,23 @@ defmodule TimelineLive do
       inserted_at: DateTime.utc_now()
     }
 
-    # 广播新帖子到所有客户端
     Phoenix.PubSub.broadcast(PhoenixPlayground.PubSub, @topic, {:new_post, post})
 
-    socket =
-      socket
-      |> stream_insert(:posts, post, at: 0)
-      |> assign(:form, to_form(%{"content" => ""}))
-
-    {:noreply, socket}
+    {:noreply,
+     socket
+     |> assign(:form, to_form(%{"content" => ""}))}
   end
 
   def handle_event("delete_post", %{"dom_id" => dom_id}, socket) do
-    # 广播删除操作到所有客户端
     Phoenix.PubSub.broadcast(PhoenixPlayground.PubSub, @topic, {:delete_post, dom_id})
 
     {:noreply, socket}
   end
 
-  # 处理来自其他客户端的新帖子
   def handle_info({:new_post, post}, socket) do
     {:noreply, stream_insert(socket, :posts, post, at: 0)}
   end
 
-  # 处理来自其他客户端的删除操作
   def handle_info({:delete_post, dom_id}, socket) do
     {:noreply, stream_delete_by_dom_id(socket, :posts, dom_id)}
   end
@@ -65,7 +54,7 @@ defmodule TimelineLive do
     <div class="timeline">
       <h1>Timeline</h1>
 
-      <.form for={@form} phx-submit="create_post">
+      <.form for={@form} phx-submit="create_post" id="post-form">
         <textarea name="content" placeholder="What's on your mind?"><%= @form.params["content"] %></textarea>
         <button type="submit">Post</button>
       </.form>
@@ -82,33 +71,114 @@ defmodule TimelineLive do
     </div>
 
     <style>
-      .timeline { max-width: 800px; margin: 0 auto; padding: 20px; }
+      .timeline {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      h1 {
+        color: #2c3e50;
+        font-size: 2.5em;
+        margin-bottom: 1em;
+        text-align: center;
+      }
+
       .post {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin: 10px 0;
+        border: 1px solid #e1e8ed;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 16px 0;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
       }
-      .post-content { flex: 1; }
-      form { margin: 20px 0; }
-      textarea { width: 100%; min-height: 100px; margin-bottom: 10px; }
+
+      .post:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .post-content {
+        flex: 1;
+        margin-right: 16px;
+      }
+
+      .post-content p {
+        color: #2c3e50;
+        font-size: 1.1em;
+        line-height: 1.5;
+        margin: 0 0 8px 0;
+      }
+
+      .post-content small {
+        color: #8795a1;
+        font-size: 0.9em;
+      }
+
+      form {
+        margin: 20px 0;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        margin-bottom: 16px;
+        padding: 12px;
+        border: 2px solid #e1e8ed;
+        border-radius: 8px;
+        font-size: 1em;
+        resize: vertical;
+        transition: border-color 0.2s ease;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #4a9eff;
+      }
+
       button {
-        padding: 8px 16px;
+        padding: 10px 20px;
         background: #4a9eff;
         color: white;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         cursor: pointer;
+        font-size: 1em;
+        font-weight: 500;
+        transition: all 0.2s ease;
       }
-      button:hover { background: #357abd; }
+
+      button:hover {
+        background: #357abd;
+        transform: translateY(-1px);
+      }
+
       .delete-btn {
         background: #ff4a4a;
         margin-left: 10px;
+        padding: 8px 16px;
+        font-size: 0.9em;
+        opacity: 0.8;
       }
+
       .delete-btn:hover {
         background: #bd3535;
+        opacity: 1;
+      }
+
+      body {
+        background: #f8fafc;
+        margin: 0;
+        padding: 20px;
       }
     </style>
     """
